@@ -61,9 +61,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 16,
+          crossAxisCount: 32,
         ),
-        itemCount: 528,
+        itemCount: 2048, // 32 (columns) * 64 (rows)
         itemBuilder: (context, index) {
           if (index % 3 == 0) {
             return AnimatedBuilder(
