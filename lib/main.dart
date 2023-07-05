@@ -59,47 +59,51 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 16,
+      body: FractionallySizedBox(
+        alignment: Alignment.topCenter,
+        heightFactor: 0.5,
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 32,
+          ),
+          itemCount: 1024,
+          itemBuilder: (context, index) {
+            if (index % 3 == 0) {
+              return AnimatedBuilder(
+                animation: _controller,
+                child: Image.asset(imageList[0]),
+                builder: (BuildContext context, Widget? _widget) {
+                  return new Transform.rotate(
+                    angle: _controller.value * 2.0 * pi,
+                    child: _widget!,
+                  );
+                },
+              );
+            } else if (index % 3 == 1) {
+              return AnimatedBuilder(
+                animation: _controller,
+                child: Image.asset(imageList[1]),
+                builder: (BuildContext context, Widget? _widget) {
+                  return Opacity(
+                    opacity: _controller.value,
+                    child: _widget!,
+                  );
+                },
+              );
+            } else {
+              return AnimatedBuilder(
+                animation: _controller,
+                child: Image.asset(imageList[2]),
+                builder: (BuildContext context, Widget? _widget) {
+                  return Transform.scale(
+                    scale: _controller.value,
+                    child: _widget!,
+                  );
+                },
+              );
+            }
+          },
         ),
-        itemCount: 528,
-        itemBuilder: (context, index) {
-          if (index % 3 == 0) {
-            return AnimatedBuilder(
-              animation: _controller,
-              child: Image.asset(imageList[0]),
-              builder: (BuildContext context, Widget? _widget) {
-                return new Transform.rotate(
-                  angle: _controller.value * 2.0 * pi,
-                  child: _widget!,
-                );
-              },
-            );
-          } else if (index % 3 == 1) {
-            return AnimatedBuilder(
-              animation: _controller,
-              child: Image.asset(imageList[1]),
-              builder: (BuildContext context, Widget? _widget) {
-                return Opacity(
-                  opacity: _controller.value,
-                  child: _widget!,
-                );
-              },
-            );
-          } else {
-            return AnimatedBuilder(
-              animation: _controller,
-              child: Image.asset(imageList[2]),
-              builder: (BuildContext context, Widget? _widget) {
-                return Transform.scale(
-                  scale: _controller.value,
-                  child: _widget!,
-                );
-              },
-            );
-          }
-        },
       ),
     );
   }
