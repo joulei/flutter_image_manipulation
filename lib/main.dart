@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +16,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MyHomePage(title: 'Image Grid'),
+      home: const MyHomePage(title: 'Image Grid'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -30,13 +30,17 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<String> imageList = const [
-    'assets/images/image1.jpg',
-    'assets/images/image2.jpg',
-    'assets/images/image3.jpg',
+    'assets/images/image_1.png',
+    'assets/images/image_2.png',
+    'assets/images/image_3.png',
   ];
+
+  final int numRows = 40;
+  final int numColumns = 20;
 
   @override
   void initState() {
@@ -53,53 +57,56 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  Widget buildImage(int index) {
+    var child = Container(
+      width: 20,
+      height: 20,
+      child: Image.asset(imageList[index % 3],
+          fit: BoxFit.fill, filterQuality: FilterQuality.none),
+    );
+
+    return AnimatedBuilder(
+      animation: _controller,
+      child: child,
+      builder: (BuildContext context, Widget? _widget) {
+        if (index % 3 == 0) {
+          return Transform.rotate(
+            angle: _controller.value * 2.0 * pi,
+            child: _widget!,
+          );
+        } else if (index % 3 == 1) {
+          return Opacity(
+            opacity: _controller.value,
+            child: _widget!,
+          );
+        } else {
+          return Transform.scale(
+            scale: _controller.value,
+            child: _widget!,
+          );
+        }
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 16,
+      body: SingleChildScrollView(
+        child: Column(
+          children: List<Widget>.generate(numRows, (int rowIndex) {
+            return Row(
+              children: List<Widget>.generate(numColumns, (int columnIndex) {
+                int index = rowIndex * numColumns + columnIndex;
+                return buildImage(index);
+              }),
+            );
+          }),
         ),
-        itemCount: 528,
-        itemBuilder: (context, index) {
-          if (index % 3 == 0) {
-            return AnimatedBuilder(
-              animation: _controller,
-              child: Image.asset(imageList[0]),
-              builder: (BuildContext context, Widget? _widget) {
-                return new Transform.rotate(
-                  angle: _controller.value * 2.0 * pi,
-                  child: _widget!,
-                );
-              },
-            );
-          } else if (index % 3 == 1) {
-            return AnimatedBuilder(
-              animation: _controller,
-              child: Image.asset(imageList[1]),
-              builder: (BuildContext context, Widget? _widget) {
-                return Opacity(
-                  opacity: _controller.value,
-                  child: _widget!,
-                );
-              },
-            );
-          } else {
-            return AnimatedBuilder(
-              animation: _controller,
-              child: Image.asset(imageList[2]),
-              builder: (BuildContext context, Widget? _widget) {
-                return Transform.scale(
-                  scale: _controller.value,
-                  child: _widget!,
-                );
-              },
-            );
-          }
-        },
       ),
     );
   }
